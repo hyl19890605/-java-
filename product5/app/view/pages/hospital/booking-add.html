@@ -1,0 +1,71 @@
+<div class="layui-box" style="padding:20px;">
+	<form id="hospital-add-form" class="layui-form layui-form-pane" action="">
+		<input type="hidden" name="id" value="{{id}}" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">医院名称</label>
+			<div class="layui-input-block">
+				<input type="text" name="hospitalName" value="{{hospitalName}}" lay-verify="required" autocomplete="off" placeholder="医院名称"
+				 class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">医院地址</label>
+			<div class="layui-input-block">
+				<input type="text" name="hospitalAddress" value="{{hospitalAddress}}" lay-verify="required" autocomplete="off" placeholder="医院地址"
+				 class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">医院电话</label>
+			<div class="layui-input-block">
+				<input type="text" name="hospitalPhone" value="{{hospitalPhone}}" lay-verify="required" autocomplete="off" placeholder="医院电话"
+				 class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">医院官网</label>
+			<div class="layui-input-block">
+				<input type="text" name="hospitalWebsite" value="{{hospitalWebsite}}" lay-verify="required" autocomplete="off" placeholder="医院官网"
+				 class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">医院图片</label>
+			<div class="layui-input-block">
+				<input type="text" name="hospitalImage" value="{{hospitalImage}}" lay-verify="required" autocomplete="off" placeholder="医院图片"
+				 class="layui-input">
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<div class="layui-input-inline">
+					<button class="layui-btn" lay-submit="" lay-filter="hospitalAdd">保 存</button>
+					<a class="layui-btn layui-btn-primary" onclick="aosCore.closeAll()">返 回</a>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+	$hospitalAddForm = $('#hospital-add-form');
+	form.render();
+	form.on('submit(hospitalAdd)', function (data) {
+		$.ajax({
+			url: data.field.id ? '/zhyy/hospital/update' : '/zhyy/hospital/add',
+			method: 'post',
+			dataType: 'json',
+			data: data.field,
+			success: function (res) {
+				if (res.code == 0) {
+					layer.closeAll('page');
+					hospitalTableReload();
+				} else {
+					layer.alert(res.msg);
+				}
+			}
+		});
+		return false;
+	});
+</script>

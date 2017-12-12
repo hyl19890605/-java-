@@ -1,0 +1,149 @@
+<div class="layui-box" style="padding:20px;">
+	<form id="bill-pay-form" class="layui-form layui-form-pane" action="">
+			<input type="hidden" name="id" value="{{id}}"/>
+		<!-- <div class="layui-form-item">
+			<label class="layui-form-label">医院</label>
+			<div class="layui-input-block"> -->
+				 <input type="hidden" name="hospitalId" value="{{hospitalId}}" lay-verify="required" autocomplete="off" placeholder="医院"
+				 class="layui-input"> 
+			<!-- </div>
+		</div> -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">金额</label>
+			<div class="layui-input-block">
+				<input type="text" name="totalAmount" value="{{totalAmount}}" lay-verify="required" autocomplete="off" placeholder="金额" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item" >
+			<label class="layui-form-label">付款码</label>
+			<div class="layui-input-block">
+				<input type="password" name="authCode" value="" autocomplete="off" placeholder="付款码" class="layui-input" >
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">支付渠道</label>
+			<div class="layui-input-block">
+				<input   lay-verify="required" value="支付宝当面付" class="layui-input">
+				<input name="channelType"  lay-verify="required" value="ALIPAY_F2F" class="layui-input" type="hidden">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">账单类型</label>
+			<div class="layui-input-block">
+				<input   lay-verify="required"  value="条码付" class="layui-input">
+				<input name="billType"  lay-verify="required"  value="8" class="layui-input" type="hidden">
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<div class="layui-input-inline" style="display:none">
+					<button class="layui-btn" lay-submit="" lay-filter="billAdd">保 存</button>
+					<a class="layui-btn layui-btn-primary" onclick="aosCore.closeAll()">返 回</a>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+<script>
+	$billPayForm = $('#bill-pay-form');
+	var authCode=$billPayForm.find(":input[name='authCode']");
+	
+	$(document).ready(function(){
+		$billPayForm.find(":input[name='authCode']").focus();
+		$billPayForm.find(":input[name='authCode']").change(function(){
+                var result = $(this).val();
+				if(result){
+					$billPayForm.find(":input[name='authCode']").attr("readonly",true);
+				}
+                
+            });
+	})
+	form.render();
+	form.on('submit(billAdd)', function (data) {
+		$.ajax({
+			url: '/hospital/pay/BarCodePay',
+			method: 'post',
+			dataType: 'json',
+			data: data.field,
+			success: function (res) {
+				if (res.code == 0) {
+					//console.log(res.data+"************");
+					console.log(res.data.outTradeNo+"*********");
+							var interId= setInterval(function () {
+								$.ajax({
+									url: '/hospital/pay/queryStatus',
+									method: 'post',
+									dataType: 'json',
+									data: {
+										outTradeNo: res.data.outTradeNo
+									},
+									success: function (statusRes) {
+										if ("SUCCESS" == statusRes.data || "success" == statusRes.data) {
+											clearInterval(interId);
+											layer.closeAll('page');
+											layer.msg("支付成功");
+											billTableReload();
+										}else{
+											clearInterval(interId);
+											var second= setInterval(function () {
+												
+												$.ajax({
+													url: '/hospital/pay/queryStatus',
+													method: 'post',
+													dataType: 'json',
+													data: {
+														outTradeNo: res.data.outTradeNo
+													},
+													success: function (statusRes) {
+														if ("SUCCESS" == statusRes.data || "success" == statusRes.data) {
+															clearInterval(second);
+															layer.closeAll('page');
+															layer.msg("支付成功");
+															billTableReload();
+														}else{
+															clearInterval(second);
+															var timeOut= setInterval(function () {
+																	
+																	$.ajax({
+																		url: '/hospital/pay/queryStatus',
+																		method: 'post',
+																		dataType: 'json',
+																		data: {
+																			outTradeNo: res.data.outTradeNo
+																		},
+																		success: function (statusRes) {
+																			if ("SUCCESS" == statusRes.data || "success" == statusRes.data) {
+																				clearInterval(timeOut);
+																				layer.closeAll('page');
+																				layer.msg("支付成功");
+																				billTableReload();
+																			}else{
+																				clearInterval(timeOut);
+																				layer.closeAll('page');
+																				layer.msg("支付超时");
+																				billTableReload();
+																			}
+																			
+																		}
+																	});
+																}, 20000);
+														}
+														
+													}
+												});
+											}, 10000);
+										}
+										
+									}
+								});
+							}, 5000);
+					
+				} else {
+					layer.alert(res.msg);
+				}
+			}
+		});
+	return false;
+});
+</script>	

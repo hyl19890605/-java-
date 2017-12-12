@@ -1,0 +1,104 @@
+<div class="layui-main">
+    <form id="hospitalSearchForm" class="layui-form search-form" action="/zhyy/hospital/excel" method="POST">
+        <input type="hidden" name="_csrf" value="{{ ctx.csrf }}">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <input type="text" name="hospitalName" placeholder="医院名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-input-inline" style="width:360px;">
+                    <button class="layui-btn" id="hospitalSearch">
+                        <i class="layui-icon">&#xe615;</i> 搜索
+                    </button>
+                    <button class="layui-btn" id="hospitalAdd">
+                        <i class="layui-icon">&#xe608;</i>新建
+                    </button>
+                    <button class="layui-btn" lay-submit lay-filter="exporthospitalExcel">导出Excel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <table id="hospitalTable" lay-filter="hospitalTable"></table>
+</div>
+
+<script>
+    form.render();
+    window.hospitalToolbar = [
+                              '<a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>',
+                              '<a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>',
+                              '<a class="layui-btn layui-btn-sm" lay-event="payConfig">支付配置</a>',
+                              '<a class="layui-btn layui-btn-sm" lay-event="apiConfig">API配置</a>'];
+    var hospitalTable = table.render({
+        elem: '#hospitalTable',
+        url:'/zhyy/hospital/page',
+        method: 'post',
+        page:true,
+        height:'full-230',
+        cols: [[
+             {type:'numbers',title:'序号'}
+            ,{field: 'hospitalName', title: '名称', align:'center',width: 250}
+            ,{field: 'hospitalAddress', title: '地址', align:'center',width: 250}
+            ,{field: 'hospitalPhone', title: '电话', align:'center',width: 180}
+            ,{field: 'hospitalWebsite', title: '官网', align:'center',width: 180}
+            ,{field: 'hospitalImage', title: '图片', align:'center',width: 180}
+            ,{field: 'gmtCreate', title: '创建时间', align:'center',width: 180,templet:'<div>\{{aosCore.parseDate(d.gmtCreate)}}</div>'}
+            ,{field: 'gmtModified', title: '更新时间', align:'center',width: 180,templet:'<div>\{{aosCore.parseDate(d.gmtModified)}}</div>'}
+            ,{fixed: 'right', title:'操作', toolbar: '<div>\{{hospitalToolbar.join("")}}</div>',width: 280}
+        ]]
+    });
+
+    window.hospitalTableReload = function(){
+        var req = $("#hospitalSearchForm").serializeArray(),reqData = {};
+        for(var i in req){reqData[req[i].name] = req[i].value;}
+        hospitalTable.reload({ where:reqData });
+    }
+
+    $('#hospitalSearch').off('click').on('click', function(){
+        hospitalTableReload();
+        return false;
+    });
+
+    $('#hospitalAdd').off('click').on('click', function(){
+        var createUrl = '/zhyy/hospital/toAdd?v=' + new Date().getTime();
+        aosCore.openClickLayerPage(createUrl, '新建', 600, 400);
+        return false;
+    });
+
+    table.on('tool(hospitalTable)', function(obj){
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值
+        
+        if(layEvent === 'del'){
+            layer.confirm('确认删除？', function(index){
+                $.ajax({
+                    url:'/zhyy/hospital/delete',
+                    method:'post',
+                    data:{id:data.id},
+                    success:function(res){
+                        if(res.code==0){
+                            layer.msg('删除成功');
+                            hospitalTableReload();
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    },
+                    complete:function(){
+                        layer.close(index);
+                    }
+                });
+            });
+        } else if(layEvent === 'edit'){ //编辑
+            var updateUrl = '/zhyy/hospital/toUpdate?id='+data.id+'&v=' + new Date().getTime();
+            aosCore.openClickLayerPage(updateUrl, '修改', 600, 400);
+        } else if(layEvent === 'payConfig'){ //支付配置
+            var payConfigUrl = '/zhyy/payConfig/toPage?hospitalId='+data.id+'&v=' + new Date().getTime();
+            aosCore.openClickLayerPage(payConfigUrl, '支付配置', 1000, 700);
+        } else if(layEvent === 'apiConfig'){ //API配置
+            var apiConfigUrl = '/zhyy/apiConfig/toPage?hospitalId='+data.id+'&v=' + new Date().getTime();
+            aosCore.openClickLayerPage(apiConfigUrl, 'API配置', 1000, 700);
+        }
+        
+    });
+</script>

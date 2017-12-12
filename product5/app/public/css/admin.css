@@ -1,0 +1,102 @@
+@import url(myfont.css);
+
+/* 重构 */
+.layui-tab-title {
+	background: #f2f2f2;
+}
+.layui-body .layui-tab{
+	margin:0px;
+}
+.layui-body .layui-tab-content{
+	padding:10px 10px 0px 18px;
+}
+.layui-tab-title .layui-this {
+	background: #fff;
+}
+.layui-tab-title li:first-child > i {
+	display: none;
+}
+.layui-form-item{
+	margin-bottom:10px;
+}
+.layui-layout-admin .layui-logo{
+	font-size:22px;
+	color:#ffffff;
+	width:400px;
+}
+
+.layui-footer{
+	text-align: center;
+	line-height: 44px;
+}
+.layui-table-header{
+	height:38px;
+}
+.layui-body{overflow-y: auto;}
+/*修复select 在弹出层引起滚动条的问题*/
+body .layui-layer-page .layui-layer-content{
+	overflow:visible;
+}
+
+.layui-table-header th span{
+	font-weight: bold;
+}
+
+.search-form{
+	padding:7px 0px;
+}
+.search-form .layui-form-item{
+	margin-bottom: 0px;
+}
+.search-form .layui-inline{
+	margin-bottom: 0px;
+	margin-right: 5px;
+}
+.btn-nav{
+	margin-top:12px;
+}
+
+.dislpayArrow{position: absolute;top:0;bottom:0;left:200px;width:0px; height:100%;z-index:9999;}
+.dislpayArrow a{ left:0px;position:absolute;cursor: pointer; display:block; width:17px; height:61px;top:50%; margin-top:-30px;outline:none;}
+.dislpayArrow a.open{ left:-200px;background-position:0 -61px;}
+.dislpayArrow a:hover{ text-decoration:none; background-position:right 0;}
+.dislpayArrow a.open:hover{background-position:right -61px;}
+.dislpayArrow a{background:url(/images/icon_arrow.png) no-repeat 0 0;}
+
+.me-tree-checkbox li{
+	margin-top:5px;
+	font-size:14px;
+}
+
+.me-tree-checkbox .layui-form-checkbox[lay-skin=primary]{
+	margin-top:0px;
+	margin-right:5px;
+}
+
+.me-tree-checkbox .layui-form-checkbox[lay-skin=primary] i{
+	width:14px;
+	height:14px;
+}
+
+/** 树组件 **/
+.aos-tree{line-height: 26px;}
+.aos-tree li{text-overflow: ellipsis; overflow:hidden; white-space: nowrap;}
+.aos-tree li a, 
+.aos-tree li .layui-tree-spread{display: inline-block; vertical-align: top; height: 26px; *display: inline; *zoom:1; cursor: pointer;}
+.aos-tree li a{font-size: 0;}
+.aos-tree li a i{font-size: 17px;}
+.aos-tree li a cite{padding: 0 6px; font-size: 14px; font-style: normal;}
+.aos-tree li i{color: #333; -moz-user-select: none;}
+.aos-tree li .layui-tree-check{font-size: 13px;}
+.aos-tree li .layui-tree-check:hover{color: #009E94;}
+.aos-tree li ul{display: none; margin-left: 20px;}
+.aos-tree .layui-form-checkbox[lay-skin=primary] i{margin:0px;padding:0px;width:14px;height:14px;color:#ffffff;}
+.aos-tree .layui-form-checkbox[lay-skin=primary]{margin:0px;}
+
+/**图标显示页面*/
+.site-doc-icon{margin-bottom: 50px; font-size: 0;overflow-y: auto;height:358px;}
+.site-doc-icon li{display: inline-block; vertical-align: middle; width: 127px; line-height: 25px; padding: 20px 0; margin-right: -1px; margin-bottom: -1px; border: 1px solid #e2e2e2; font-size: 14px; text-align: center; color: #666; transition: all .3s; -webkit-transition: all .3s;}
+.site-doc-icon li .mine-icon{display: inline-block; font-size: 36px;}
+.site-doc-icon li .fontclass{display: none;}
+.site-doc-icon li .name{color: #c2c2c2;}
+.site-doc-icon li:hover{background-color: #f2f2f2; color: #000;}

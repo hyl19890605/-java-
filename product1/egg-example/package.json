@@ -5,7 +5,12 @@
   "private": true,
   "dependencies": {
     "egg": "^1.9.0",
-    "egg-scripts": "^2.1.0"
+    "egg-scripts": "^2.1.0",
+    "egg-security": "^2.0.0",
+    "egg-validate": "^1.0.0",
+    "egg-view-handlebars": "^1.2.0",
+    "egg-view-nunjucks": "^2.1.4",
+    "parameter": "^2.2.1"
   },
   "devDependencies": {
     "autod": "^2.10.0",

@@ -1,0 +1,90 @@
+<div class="layui-box" style="padding:20px;">
+	<form id="department-add-form" class="layui-form layui-form-pane" action="">
+		<input type="hidden" name="id" value="{{id}}" />
+		<div class="layui-form-item">
+			<label class="layui-form-label">上级科室</label>
+			<div class="layui-input-block">
+				<select name="pid" id="parentDepartment" lay-search lay-verify="required"></select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">科室名称</label>
+			<div class="layui-input-block">
+				<input type="text" name="deptName" value="{{deptName}}" lay-verify="required|deptName" autocomplete="off" placeholder="科室名称" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<!-- <label class="layui-form-label">科室图片</label>
+			<div class="layui-input-block">
+				<input type="text" name="deptImage" value="{{deptImage}}" lay-verify="required|deptImage" autocomplete="off" placeholder="科室图片" class="layui-input">
+			</div> -->
+			<div class="layui-inline">
+				<label class="layui-form-label">科室图片</label>
+				<div class="layui-input-inline" style="width:301px;">
+					<input type="text" name="deptImage" value="{{deptImage}}" lay-verify="required|deptImage" autocomplete="off" placeholder="科室图片" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-inline">
+				<button type="button" class="layui-btn" id="uploadDeptImage">
+					<i class="layui-icon">&#xe67c;</i>上传图片
+				</button>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">排序号</label>
+			<div class="layui-input-block">
+				<input type="text" name="sortNo" value="{{sortNo}}" lay-verify="required|number" autocomplete="off" placeholder="排序号" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item layui-form-text">
+			<label class="layui-form-label">科室描述</label>
+			<div class="layui-input-block">
+				<textarea name="deptDesc" lay-verify="required|deptDesc" autocomplete="off" placeholder="科室描述" class="layui-textarea">{{deptDesc}}</textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<button class="layui-btn" lay-submit="" lay-filter="departmentAdd">保 存</button>
+			<a class="layui-btn layui-btn-primary" onclick="aosCore.closeAll()">返 回</a>
+		</div>
+	</form>
+</div>
+
+<script>
+	aosCore.initTree({
+		url: '/hospital/department/treeList',
+		id: 'parentDepartment',
+		name: 'deptName',
+		title: '一级科室',
+		value: '0',
+		selctedId: "{{pid}}"
+	});
+	form.render();
+	form.on('submit(departmentAdd)', function (data) {
+		$.ajax({
+			url: data.field.id ? '/hospital/department/update' : '/hospital/department/add',
+			method: 'post',
+			dataType: 'json',
+			data: data.field,
+			success: function (res) {
+				if (res.code == 0) {
+					layer.closeAll('page');
+					departmentTableReload();
+				} else {
+					layer.alert(res.msg);
+				}
+			}
+		});
+		return false;
+	});
+	$departmentAddForm = $('#department-add-form');
+	upload.render({
+		elem:'#uploadDeptImage',
+		url:'/file/upload',
+		done:function(res){
+			$departmentAddForm.find(":input[name='deptImage']").val("http://zhyy-build.oss-cn-beijing.aliyuncs.com/"+res.data);
+		},
+		erro:function(ss){
+			layer.alert("上传失败");
+		}
+	});
+</script>

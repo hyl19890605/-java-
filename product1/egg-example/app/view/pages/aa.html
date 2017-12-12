@@ -1,0 +1,40 @@
+<html>
+
+    <body>
+        <div>
+            SSSSSSSSSSSSSSSSSSS
+            <form>
+                <input type="text"  name="aa" id="aa"/>
+                <input type="submit" value="提交"/>
+            </form>
+        
+        </div>
+    </body>
+</html>
+<script src='js/jquery.js'></script>
+<script>
+    $(document).ready(function(){
+        //$("#aa").change(function(){
+           
+            // if(aa!=""){
+        
+                    $("form").submit(function(){
+                        var aa=$("#aa").val();
+                        alert(aa+"**********");
+                        $.ajax({
+                            url:"/add",
+                            method:'GET',
+                            data:{aa:aa},
+                            success:function(res){
+                                console.log(res+"&&&&&&&&&&&&&");
+                            }
+
+                 });
+                // })
+
+           // }
+            
+        })
+    })
+
+</script>

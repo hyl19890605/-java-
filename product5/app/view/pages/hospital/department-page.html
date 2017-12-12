@@ -1,0 +1,110 @@
+<form id="departmentSearchForm" class="layui-form search-form" action="/hospital/department/excel" method="POST">
+    <input type="hidden" name="_csrf" value="{{ ctx.csrf }}">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <div class="layui-input-inline">
+                <select id="queryParentDepartment" name="id" lay-search></select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <div class="layui-input-inline">
+                <input type="text" name="deptName" placeholder="科室名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <div class="layui-input-inline" style="width:470px;">
+                <button class="layui-btn" id="departmentSearch">
+                    <i class="layui-icon">&#xe615;</i> 搜索
+                </button>
+                <button class="layui-btn" id="departmentAdd">
+                    <i class="layui-icon">&#xe608;</i>新建
+                </button>
+                <button class="layui-btn" lay-submit lay-filter="exportdepartmentExcel">
+                    <i class="layui-icon">&#xe601;</i>导出Excel
+                </button>
+                <button class="layui-btn" lay-submit lay-filter="uploaddepartmentExcel">
+                    <i class="layui-icon">&#xe62f;</i>导入Excel
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+<table id="departmentTable" lay-filter="departmentTable"></table>
+
+<script>
+    aosCore.initTree({
+        url: '/hospital/department/treeList',
+        id: 'queryParentDepartment',
+        name: 'deptName',
+        title: '上级科室'
+    });
+    form.render();
+    window.departmentToolbar = ['<a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>',
+        '<a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>'];
+    var departmentTable = table.render({
+        elem: '#departmentTable',
+        url: '/hospital/department/page',
+        method: 'post',
+        page: true,
+        height: 'full-230',
+        cols: [[
+            { type: 'numbers', title: '序号' }
+            ,{ field:'deptCode',title:'科室编号'}
+            , { field: 'deptName', title: '科室名称', align: 'center' }
+            , { field: 'parentName', title: '上级科室', align: 'center' }
+            , { field: 'deptDesc', title: '科室描述', align: 'center' }
+            , { field: 'deptImage', title: '科室图片', align: 'center' }
+            , { field: 'sortNo', title: '排序号', align: 'center', width: 80 }
+            , { field: 'gmtCreate', title: '创建时间', align: 'center', width: 180, templet: '<div>\{{aosCore.parseDate(d.gmtCreate)}}</div>' }
+            , { field: 'gmtModified', title: '更新时间', align: 'center', width: 180, templet: '<div>\{{aosCore.parseDate(d.gmtModified)}}</div>' }
+            , { fixed: 'right', title: '操作', toolbar: '<div>\{{departmentToolbar.join("")}}</div>', width: 280 }
+        ]]
+    });
+
+    window.departmentTableReload = function () {
+        var req = $("#departmentSearchForm").serializeArray(), reqData = {};
+        for (var i in req) { reqData[req[i].name] = req[i].value; }
+        departmentTable.reload({ where: reqData });
+    }
+
+    $('#departmentSearch').off('click').on('click', function () {
+        departmentTableReload();
+        return false;
+    });
+
+    $('#departmentAdd').off('click').on('click', function () {
+        var createUrl = '/hospital/department/toAdd?v=' + new Date().getTime();
+        aosCore.openClickLayerPage(createUrl, '新建', 600, 450);
+        return false;
+    });
+
+    table.on('tool(departmentTable)', function (obj) {
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值
+
+        if (layEvent === 'del') {
+            layer.confirm('确认删除？', function (index) {
+                $.ajax({
+                    url: '/zhyy/department/delete',
+                    method: 'post',
+                    data: { id: data.id },
+                    success: function (res) {
+                        if (res.code == 0) {
+                            layer.msg('删除成功');
+                            departmentTableReload();
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    complete: function () {
+                        layer.close(index);
+                    }
+                });
+            });
+        } else if (layEvent === 'edit') { //编辑
+            var updateUrl = '/hospital/department/toUpdate?id=' + data.id + '&v=' + new Date().getTime();
+            aosCore.openClickLayerPage(updateUrl, '修改', 600, 450);
+        }
+
+    });
+</script>
